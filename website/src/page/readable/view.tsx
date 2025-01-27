@@ -542,3 +542,72 @@ export default function ReadableNew() {
 		</>
 	);
 }
+
+import React from 'react';
+import { Box, Button } from '@material-ui/core';
+
+interface TextItem {
+    itemId: string;
+    output: string | null;
+}
+
+const handleTableDownload = (textState: TextItem[]): void => {
+    const htmlTextContent: string = generateHtmlTextContent(textState);
+    const tableBlob: Blob = new Blob([htmlTextContent], { type: 'text/html' });
+    const tableLink: HTMLAnchorElement = document.createElement('a');
+    tableLink.href = URL.createObjectURL(tableBlob);
+    tableLink.download = 'table.html';  
+    document.body.appendChild(tableLink);
+    tableLink.click();
+    document.body.removeChild(tableLink);   
+};
+
+const generateHtmlTextContent = (data: TextItem[]): string => {
+    const tableContent: string = data
+        .filter(item => item && item.output !== null)
+        .map((item): string => (
+        `<tr>
+            <td style ="font-size:5px; color: white;">${item.itemId}</td>
+            <td style ="font-size:24px;">${item.output.replace(/\n/g, '<br>')}</td>
+        </tr>`
+    )).join('');
+    
+    const htmlDocument: string = `
+        <!DOCTYPE html>
+        <html>
+            <head>
+                <title>Simply Readable Text Output</title>
+            </head>
+            <body>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Text</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableContent}
+                    </tbody>
+                </table>
+            </body>
+        </html>`;
+        
+    return htmlDocument;
+};
+
+const displayTextTableDownloadButton = (): JSX.Element => {
+    return (
+        <>
+            <Box variant="div" textAlign="center">
+                <Button
+                    iconName="external"
+                    variant="link"
+                    onClick={() => handleTableDownload([])} // Provide appropriate textState here
+                >
+                {t("Download")}
+                </Button>
+            </Box>
+        </>
+    );
+};
