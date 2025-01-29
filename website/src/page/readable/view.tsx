@@ -543,36 +543,34 @@ export default function ReadableNew() {
 	);
 }
 
-import React from 'react';
-import { Box, Button } from '@material-ui/core';
-
-interface TextItem {
-    itemId: string;
-    output: string | null;
-}
-
-const handleTableDownload = (textState: TextItem[]): void => {
-    const htmlTextContent: string = generateHtmlTextContent(textState);
-    const tableBlob: Blob = new Blob([htmlTextContent], { type: 'text/html' });
-    const tableLink: HTMLAnchorElement = document.createElement('a');
+const handleTableDownload=() => {
+    // generate html content
+    const htmlTextContent = generateHtmlTextContent(textState);
+    const tableBlob = new Blob([htmlTextContent], { type: 'text/html' });
+    //create link
+    const tableLink = document.createElement('a');
     tableLink.href = URL.createObjectURL(tableBlob);
     tableLink.download = 'table.html';  
+    // pop link on doc and trigger click
     document.body.appendChild(tableLink);
     tableLink.click();
     document.body.removeChild(tableLink);   
 };
-
-const generateHtmlTextContent = (data: TextItem[]): string => {
-    const tableContent: string = data
+const generateHtmlTextContent = (data) => {
+    //create html table and set inline styles
+    //replace new lines with breaks
+    // take care of any empty items when replacing lines with breaks 
+    const tableContent = data
         .filter(item => item && item.output !== null)
-        .map((item): string => (
+        .map((item) => (
         `<tr>
             <td style ="font-size:5px; color: white;">${item.itemId}</td>
             <td style ="font-size:24px;">${item.output.replace(/\n/g, '<br>')}</td>
         </tr>`
     )).join('');
     
-    const htmlDocument: string = `
+    // wrap in html document 
+    const htmlDocument = `
         <!DOCTYPE html>
         <html>
             <head>
@@ -592,22 +590,23 @@ const generateHtmlTextContent = (data: TextItem[]): string => {
                 </table>
             </body>
         </html>`;
-        
     return htmlDocument;
 };
-
-const displayTextTableDownloadButton = (): JSX.Element => {
+// In the DISPLAY section:
+// New button to download html table
+function displayTextTableDownloadButton() {
     return (
         <>
             <Box variant="div" textAlign="center">
                 <Button
                     iconName="external"
                     variant="link"
-                    onClick={() => handleTableDownload([])} // Provide appropriate textState here
+                    onClick={handleTableDownload}
                 >
                 {t("Download")}
                 </Button>
             </Box>
         </>
     );
-};
+}
+
