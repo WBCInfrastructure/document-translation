@@ -53,9 +53,6 @@ export default function ReadableNew() {
 
 	UseReadableSubscription(setMetadataState, setTextState, setImageState);
 
-	import React from 'react';
-import { Box, Button } from '@material-ui/core';
-
 interface TextItem {
     itemId: string;
     output: string | null;
