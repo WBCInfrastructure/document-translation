@@ -90,14 +90,14 @@ export default function ReadableNew() {
 		return hasInput || hasOutput;
 	}
 
-		const handleTableDownload=() => {
+	const handleTableDownload=() => {
 		// generate html content
 		const htmlTextContent = generateHtmlTextContent(textState);
-		const tableBlob = new Blob([htmlTextContent], { type: 'text/html' });
+		const tableBlob = new Blob([htmlTextContent], { type: 'application/vnd.ms-word' });
 		//create link
 		const tableLink = document.createElement('a');
 		tableLink.href = URL.createObjectURL(tableBlob);
-		tableLink.download = 'table.html';  
+		tableLink.download = 'Simply Readable Output.doc';  
 		// pop link on doc and trigger click
 		document.body.appendChild(tableLink);
 		tableLink.click();
@@ -107,39 +107,35 @@ export default function ReadableNew() {
 		//create html table and set inline styles
 		//replace new lines with breaks
 		// take care of any empty items when replacing lines with breaks 
+		// ${tableContent}
 		const tableContent = data
 			.filter(item => item && item.output !== null)
 			.map((item) => (
 			`<tr>
-				<td style ="font-size:5px; color: white;">${item.itemId}</td>
-				<td style ="font-size:24px;">${item.output.replace(/\n/g, '<br>')}</td>
-			</tr>`
+        		<td style="border: 1px solid black; font-size:5px; color: white; width:50%;">${item.itemId}</td>
+        		<td style="border: 1px solid black; font-size:29px; padding: 10px; font-family: Arial; width:50%; word-wrap: break-word; word-break: break-all; white-space: normal;">${item.output.replace(/\n/g, '<br>')}</td>
+      		</tr>`
 		)).join('');
 		
 		// wrap in html document 
 		const htmlDocument = `
 			<!DOCTYPE html>
-			<html>
-				<head>
-					<title>Simply Readable Text Output</title>
-				</head>
-				<body>
-					<table>
-						<thead>
-							<tr>
-								<th>Image</th>
-								<th>Text</th>
-							</tr>
-						</thead>
-						<tbody>
-							${tableContent}
-						</tbody>
-					</table>
-				</body>
-			</html>`;
+			<html lang="en">
+			<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>HTML to Word</title>
+			</head>
+			<body>
+			<div style="width: 100%; max-width: 500px; margin: 0 auto; font-family: Arial, sans-serif;">
+				<table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+					${tableContent}
+				</table>
+			</div>
+			</body>`;
 		return htmlDocument;
 	};
-
+	
 	async function createNewTextItem(order) {
 		const authSession = await fetchAuthSession();
 		try {
