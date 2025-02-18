@@ -109,7 +109,7 @@ export default function ReadableNew() {
 		// take care of any empty items when replacing lines with breaks 
 		// ${tableContent}
 		const tableContent = data
-			.filter(item => item && item.output !== null)
+			.filter(item => item && item.output)
 			.map((item) => (
 			`<tr>
         		<td style="border: 1px solid black; font-size:5px; color: white; width:50%;">${item.itemId}</td>
