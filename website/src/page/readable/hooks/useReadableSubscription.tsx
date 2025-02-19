@@ -185,12 +185,13 @@ export const UseReadableSubscription = (
 			const possibleUpdateKeysForMetadata = ["name"];
 
 			// First check if there is an output when an input is provided
-			if (item.input && !item.output){
-				console.log(
-					"handleNewDataFromSubscription no output provided for given input",
-					item
-				);			
-			} else if (item.type === ItemValues.TEXT) {
+			//if (item.input && !item.output){
+			//	console.log(
+			//		"handleNewDataFromSubscription no output provided for given input",
+			//		item
+			//	);			
+			//} else 
+			if (item.type === ItemValues.TEXT) {
 				setNewTextStateValues(item, possibleUpdateKeysForItems);
 			} else if (item.type === ItemValues.IMAGE) {
 				setNewImageStateValues(item, possibleUpdateKeysForItems);
