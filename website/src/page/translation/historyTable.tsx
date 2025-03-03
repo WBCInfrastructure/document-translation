@@ -20,10 +20,13 @@ import {
 
 import { useTranslationJobs } from "./hooks/useTranslationJobs";
 
+import { amplifyConfigureAppend } from "../../util/amplifyConfigure";
 import { formatJobNameId } from "../../util/formatJobNameId";
 import { formatTimestamp } from "../../util/formatTimestamp";
+import { getPresignedUrl } from "../../util/getPresignedUrl";
 import { describeS3Key } from "./util/describeS3Key";
 
+const cfnOutputs = require("../../cfnOutputs.json");
 
 interface Item {
 	createdAt: number;
@@ -36,9 +39,16 @@ interface Item {
 }
 
 export default function HistoryTable() {
-
-
-	const { jobs, loading, fetchJobs } = useTranslationJobs();
+	const storageConfig = {
+		Storage: {
+			S3: {
+				bucket: cfnOutputs.awsUserFilesS3Bucket,
+				region: cfnOutputs.awsRegion,
+			},
+		},
+	};
+	amplifyConfigureAppend(storageConfig);
+	const { jobs, loading } = useTranslationJobs();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [hideExpired, setHideExpired] = useState(true);
@@ -126,7 +136,10 @@ export default function HistoryTable() {
 				const k = describeS3Key({
 					key: keys[i],
 				});
-				const presignedUrl = null;
+				const presignedUrl = await getPresignedUrl({
+					path: `${k.scope}/${k.identity}/${k.jobId}/${k.stage}/${k.translateId}/${k.filename}`,
+					bucketKey: "awsUserFilesS3Bucket",
+				});
 				window.open(presignedUrl, "_blank", "noopener,noreferrer");
 			}
 		} catch (err) {
@@ -172,6 +185,7 @@ export default function HistoryTable() {
 				return !hideExpired || item.jobStatus.toUpperCase() !== "EXPIRED";
 			})}
 			loadingText={t("generic_loading")}
+			loading={loading}
 			trackBy="id"
 			empty={
 				<Box margin={{ vertical: "xs" }} textAlign="center" color="inherit">
@@ -188,31 +202,19 @@ export default function HistoryTable() {
 			}
 			header={
 				<Header
-				  counter={`(${jobs.length})`}
-				  actions={
-					<SpaceBetween 
-						direction="horizontal" 
-						size="s" 
-						alignItems="center"
-					>
-					  <Button
-						onClick={ () => fetchJobs()}
-					  >
-						{t("generic_refresh")}
-					  </Button>						
-					  <Toggle
-						onChange={({ detail }) => toggleExpired()}
+				counter={`(${jobs.length})`}
+				actions={
+					<Toggle
+						onChange={({ detail }) => toggleExpired(detail.checked)}
 						checked={hideExpired ? false : true}
-					  >
+					>
 						{t("generic_status_expired")}
-					  </Toggle>
-					</SpaceBetween>
-				  }
+					</Toggle>
+				}
 				>
-				  {t("generic_history")}
+					{t("generic_history")}
 				</Header>
-			  }
-			  
+			}
 			stickyHeader
 			stripedRows
 			filter={
