@@ -56,6 +56,10 @@ export default function HistoryTable() {
 
 	const toggleExpired = () => setHideExpired(!hideExpired);
 
+	const refreshJobs = () => {
+		window.location.reload();
+	};
+
 	/* formatTargets */
 	const formatTargets = (stringTargets: string) => {
 		const targets: string[] = JSON.parse(stringTargets);
@@ -202,15 +206,26 @@ export default function HistoryTable() {
 			}
 			header={
 				<Header
-				counter={`(${jobs.length})`}
-				actions={
-					<Toggle
-						onChange={({ detail }) => toggleExpired(detail.checked)}
-						checked={hideExpired ? false : true}
-					>
-						{t("generic_status_expired")}
-					</Toggle>
-				}
+					counter={`(${jobs.length})`}
+					actions={
+						<SpaceBetween 
+							direction="horizontal" 
+							size="s" 
+							alignItems="center"
+						>
+						<Button
+							onClick={ () => refreshJobs()}
+						>
+							{t("generic_refresh")}
+						</Button>	
+						<Toggle
+							onChange={({ detail }) => toggleExpired(detail.checked)}
+							checked={hideExpired ? false : true}
+						>
+							{t("generic_status_expired")}
+						</Toggle>
+						</SpaceBetween>
+					}
 				>
 					{t("generic_history")}
 				</Header>
