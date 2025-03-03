@@ -216,7 +216,7 @@ export default function HistoryTable() {
 						<Button
 							onClick={ () => refreshJobs()}
 						>
-							{t("generic_refresh")}
+							Refresh
 						</Button>	
 						<Toggle
 							onChange={({ detail }) => toggleExpired(detail.checked)}
