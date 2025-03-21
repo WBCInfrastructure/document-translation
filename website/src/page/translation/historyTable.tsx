@@ -144,7 +144,18 @@ export default function HistoryTable() {
 					path: `${k.scope}/${k.identity}/${k.jobId}/${k.stage}/${k.translateId}/${k.filename}`,
 					bucketKey: "awsUserFilesS3Bucket",
 				});
-				window.open(presignedUrl, "_blank", "noopener,noreferrer");
+
+				// DREW
+				// Replacing with the following code as window.open was opening a new
+				// tab but not downloading the file on Edge
+				// window.open(presignedUrl, "_blank", "noopener,noreferrer");
+				const anchor = document.createElement('a');
+				anchor.href = presignedUrl;
+				anchor.download = k.filename;
+				anchor.style.display = 'none';
+				document.body.appendChild(anchor);
+				anchor.click(); 
+				document.body.removeChild(anchor);
 			}
 		} catch (err) {
 			console.log("error: ", err);
