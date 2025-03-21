@@ -149,12 +149,20 @@ export default function HistoryTable() {
 				// Replacing with the following code as window.open was opening a new
 				// tab but not downloading the file on Edge
 				// window.open(presignedUrl, "_blank", "noopener,noreferrer");
+				const response = await fetch(presignedUrl); // Fetch the file
+				if (!response.ok) {
+					throw new Error('Failed to fetch file');
+				}
+				const blob = await response.blob(); // Convert response to Blob
+				const blobUrl = window.URL.createObjectURL(blob); // Create a temporary Blob URL
+		
+				// Create and trigger a hidden anchor element
 				const anchor = document.createElement('a');
-				anchor.href = presignedUrl;
+				anchor.href = blobUrl;
 				anchor.download = k.filename;
 				anchor.style.display = 'none';
 				document.body.appendChild(anchor);
-				anchor.click(); 
+				anchor.click();
 				document.body.removeChild(anchor);
 			}
 		} catch (err) {
